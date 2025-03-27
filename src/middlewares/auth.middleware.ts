@@ -1,68 +1,28 @@
-import { NextFunction, Request, Response } from "express";
-import { body, param, validationResult } from "express-validator";
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-export const registerValidation = [
-  body("fullname").notEmpty().withMessage("Fullname is required"),
-  body("email").isEmail().withMessage("Invalid email address"),
-  body("password").notEmpty().withMessage("Password is required"),
-  body("phone_number").notEmpty().withMessage("phone_number is required"),
-  body("gender").notEmpty().withMessage("gender is required"),
-  body("country").notEmpty().withMessage("country is required"),
-  body("date_of_birth").notEmpty().withMessage("date_of_birth is required"),
-  body("user_type")
-    .notEmpty()
-    .withMessage("User type is required")
-    .isIn(["vendor", "customer"])
-    .withMessage('User type must be either "vendor" or "customer"'),
-];
+dotenv.config();
 
-export const loginValidation = [
-  body("email").isEmail().withMessage("Invalid email address"),
-  body("password").notEmpty().withMessage("Password is required"),
-];
+interface AuthRequest extends Request {
+  user?: { id: string; email: string }; // Include email now
+}
 
-export const forgotPasswordValidation = [
-  body("email").isEmail().withMessage("Invalid email address"),
-];
+// Middleware to verify JWT token
+export const authenticateUser = (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const token = req.header("Authorization")?.split(" ")[1];
 
-export const verifyOtpValidation = [
-  body("email").isEmail().withMessage("Invalid email address"),
-  body("code").notEmpty().withMessage("OTP code is required"),
-];
+    if (!token) {
+      return res.status(401).json({ success: false, message: "Unauthorized: No token provided" });
+    }
 
-export const resetPasswordValidation = [
-  body("newPassword").notEmpty().withMessage("Password is required"),
-  body("confirmPassword")
-    .notEmpty()
-    .withMessage("Confirm Password is required"),
-  body("email").notEmpty().withMessage("Account email is required"),
-];
+    // Extract both id and email from token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string; email: string };
 
-export const updatePasswordValidation = [
-  body("newPassword").notEmpty().withMessage("Password is required"),
-  body("confirmPassword")
-    .notEmpty()
-    .withMessage("Confirm Password is required"),
-  body("currentPassword")
-    .notEmpty()
-    .withMessage("Current Password is required"),
-  body("code").optional().isNumeric(),
-];
-
-export const validate = (req: Request, res: Response, next: NextFunction) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const formattedErrors = errors.array().map((err) => {
-      return {
-        message: err.msg,
-      };
-    });
-
-    return res.status(400).json({
-      status: "error",
-      message: "Validation failed",
-      errors: formattedErrors,
-    });
+    req.user = { id: decoded.id, email: decoded.email }; // Attach both ID and email to request
+    next();
+  } catch (error) {
+    return res.status(401).json({ success: false, message: "Invalid or expired token" });
   }
-  next();
 };
