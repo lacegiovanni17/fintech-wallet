@@ -67,7 +67,7 @@ So, you are to create a digital wallet service with the following features:
 
 
 
-## Project Description: “Tweet AI”
+## Project Description: “FintechWallet”
 
 Fintech Wallet API is a secure digital wallet service that enables users to register, log in, add funds, transfer money, and track transaction history through a well-structured API.
 The task involved building a robust financial transaction system where users can add funds via mock payment gateways (Stripe/PayPal sandbox), transfer funds between accounts,
