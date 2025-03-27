@@ -14,21 +14,17 @@ export const loginValidation = Joi.object({
   password: Joi.string().required(),
 });
 
-// Middleware to validate the request using the Joi schema
+
 export const validate = (schema: Joi.ObjectSchema) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
     const { error } = schema.validate(req.body, { abortEarly: false });
     if (error) {
-      const formattedErrors = error.details.map(err => ({
-        message: err.message,
-      }));
-
-      return res.status(400).json({
+      res.status(400).json({
         status: "error",
         message: "Validation failed",
-        errors: formattedErrors,
+        errors: error.details.map(err => ({ message: err.message })),
       });
     }
-    return next(); // Ensure next() is always called if validation passes
+    next();
   };
 };

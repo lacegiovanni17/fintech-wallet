@@ -1,66 +1,169 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import axios from "axios";
+import { OAuth2Client } from "google-auth-library";
+import { NotFoundException, } from "../utils/exceptions/not_found.exception";
+import HttpException from "../utils/exceptions/http.exception";
+import { UnauthorizedException } from "../utils/exceptions/unauthorized.exception";
+import { BadRequestsException } from "../utils/exceptions/bad_request.exception";
+
 import User from "../models/user.model";
+import UtilService from "../utils/services/utils.service";
+
+const oAuth2Client = new OAuth2Client(process.env.GOOGLE_OAUTH_CLIENT_ID);
 
 class AuthService {
+  private utilService = new UtilService();
+
   /**
-   * Register a new user
-   * @param {string} first_name - User's first name
-   * @param {string} last_name - User's last name
-   * @param {string} email - User's email
-   * @param {string} password - User's password
-   * @param {string} phone_number - User's phone number
-   * @returns {Promise<object>} - Created user and access token
+   * User Registration (Traditional)
    */
-  static async register(
+  public async register(
     first_name: string,
     last_name: string,
     email: string,
     password: string,
     phone_number: string
   ) {
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) throw new Error("Email already exists");
+    try {
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser) throw new BadRequestsException("Email already exists");
 
-    const user = await User.create({ 
-      first_name, 
-      last_name, 
-      email, 
-      password, 
-      phone_number
-    });
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-    const token = this.generateToken(user.id);
-    return { user, token };
+      const user = await User.create({
+        first_name,
+        last_name,
+        email,
+        password: hashedPassword,
+        phone_number,
+      });
+
+      // Generate token with both id and email
+      const token = this.utilService.generateToken(user.id, user.email);
+
+      return this.utilService.buildApiResponse({
+        data: { user, token },
+        message: "User registered successfully.",
+        statusCode: 200,
+      });
+    } catch (error:any) {
+      throw new HttpException(500, error.message || "Registration failed");
+    }
   }
 
   /**
-   * Login user
-   * @param {string} email - User email
-   * @param {string} password - User password
-   * @returns {Promise<object>} - Access token
+   * User Login (Traditional)
    */
-  static async login(email: string, password: string) {
-    const user = await User.findOne({ where: { email } });
-    if (!user) throw new Error("Invalid credentials");
+  public async login(email: string, password: string) {
+    try {
+      const user = await User.findOne({ where: { email } });
+      if (!user) throw new UnauthorizedException("Invalid credentials");
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw new Error("Invalid credentials");
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) throw new UnauthorizedException("Invalid credentials");
 
-    const token = this.generateToken(user.id);
-    return { user, token };
+      const token = this.utilService.generateToken(user.id, user.email);
+      return this.utilService.buildApiResponse({
+        data: { user, token },
+        message: "Login successful.",
+        statusCode: 200,
+      });
+    } catch (error:any) {
+      throw new HttpException(500, error.message || "Login failed");
+    }
   }
 
   /**
-   * Generate JWT token
-   * @param {string} userId - User ID
-   * @returns {string} - JWT token
+   * Google OAuth: Validate Token & Get User Info
    */
-  static generateToken(userId: string) {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
-      expiresIn: "7d",
-    });
+  public async googleValidate(code: string) {
+    try {
+      const { tokens } = await oAuth2Client.getToken(code);
+      const ticket = await oAuth2Client.verifyIdToken({
+        idToken: tokens.id_token!,
+        audience: process.env.GOOGLE_OAUTH_CLIENT_ID,
+      });
+
+      const user = ticket.getPayload();
+      if (!user) throw new NotFoundException("User not found");
+
+      const acceptedIssuers = ["https://accounts.google.com", "accounts.google.com"];
+      if (!acceptedIssuers.includes(user.iss!)) {
+        throw new UnauthorizedException("Invalid Issuer");
+      }
+
+      if (new Date() >= new Date(user.exp! * 1000)) {
+        throw new UnauthorizedException("Token has expired");
+      }
+
+      return this.utilService.buildApiResponse({
+        data: { userId: user.sub, name: user.name, email: user.email, photo_url: user.picture },
+        message: "Google user verified.",
+        statusCode: 200,
+      });
+    } catch (error:any) {
+      throw new HttpException(500, error.message);
+    }
+  }
+
+  /**
+   * Fetch Google User Info via API
+   */
+  private async fetchUserInfo(accessToken: string) {
+    try {
+      const response = await axios.get("https://www.googleapis.com/oauth2/v1/userinfo?alt=json", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      return response.data;
+    } catch (error) {
+      throw new HttpException(500, "Google authentication failed");
+    }
+  }
+
+  /**
+   * Google Login
+   */
+  public async googleLogin(accessToken: string) {
+    try {
+      const profile:any = await this.fetchUserInfo(accessToken);
+      if (!profile || !profile.email) throw new BadRequestsException("Invalid Google profile");
+
+      const user = await User.findOne({ where: { email: profile.email } });
+      if (!user) throw new NotFoundException("User not registered");
+
+      // Generate token with id & email
+      const token = this.utilService.generateToken(user.id, user.email);
+      return { user, access_token: token };
+    } catch (error:any) {
+      throw new HttpException(500, error.message || "Google login failed");
+    }
+  }
+
+  /**
+   * Google Registration
+   */
+  public async googleRegister(accessToken: string) {
+    try {
+      const profile:any = await this.fetchUserInfo(accessToken);
+      if (!profile || !profile.email) throw new BadRequestsException("Invalid Google profile");
+
+      let user = await User.findOne({ where: { email: profile.email } });
+      if (!user) {
+        user = await User.create({
+          email: profile.email,
+          fullname: profile.name,
+          google_id: profile.id,
+          is_email_verified: true,
+        });
+      }
+
+      const token = this.utilService.generateToken(user.id, user.email);
+      return { user, access_token: token };
+    } catch (error:any) {
+      throw new HttpException(500, error.message || "Google registration failed");
+    }
   }
 }
 
-export default AuthService;
+// Export instance of AuthService
+export const authService = new AuthService();

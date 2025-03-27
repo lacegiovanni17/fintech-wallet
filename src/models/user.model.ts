@@ -1,40 +1,11 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import bcrypt from "bcryptjs";
+import { DataTypes } from "sequelize";
 import sequelize from "../config/db";
+import { IUserModel } from "../interfaces/user.interface";
+import bcrypt from "bcryptjs";
 
-interface UserAttributes {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  password: string;
-  phone_number: string;
-  balance: number;
-}
-
-interface UserCreationAttributes extends Optional<UserAttributes, "id" | "balance"> {}
-
-class User extends Model<UserAttributes, UserCreationAttributes> {
-  public id!: string;
-  public first_name!: string;
-  public last_name!: string;
-  public email!: string;
-  public password!: string;
-  public phone_number!: string;
-  public balance!: number;
-
-  // Hash password before saving to DB
-  async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-
-  // Compare passwords
-  async comparePassword(candidatePassword: string) {
-    return bcrypt.compare(candidatePassword, this.password);
-  }
-}
-
-User.init(
+// Define User Schema
+const User = sequelize.define<IUserModel>(
+  "User",
   {
     id: {
       type: DataTypes.UUID,
@@ -70,12 +41,11 @@ User.init(
     },
   },
   {
-    sequelize,
-    modelName: "User",
     tableName: "users",
+    timestamps: true,
     hooks: {
       beforeCreate: async (user) => {
-        await user.hashPassword();
+        user.password = await bcrypt.hash(user.password, 10);
       },
     },
   }
