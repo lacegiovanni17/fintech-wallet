@@ -36,23 +36,8 @@ So, you are to create a digital wallet service with the following features:
 ## Technologies Used
 * Node.js – Backend runtime environment
 * Express.js – Web framework for building RESTful APIs
-* MongoDB / PostgreSQL – Database for storing user and transaction data
-* Mongoose / Sequelize – ORM for database interactions
-* Node.js – Backend runtime environment
-* Express.js – Web framework for building RESTful APIs
-* MongoDB / PostgreSQL – Database for storing user and transaction data
-* Mongoose / Sequelize – ORM for database interactions
-* JSON Web Token (JWT) – Authentication and user session management
-* Stripe / PayPal Sandbox – Mock payment gateway integration
-* WebSockets – Real-time notifications for transactions
-* CurrencyLayer API – Currency conversion integration
-* Express Rate Limit – Prevents excessive API requests
-* Joi – Data validation for request payloads
-* Bcrypt.js – Password hashing for secure authentication
-* Dotenv – Environment variable management
-* Cors – Cross-Origin Resource Sharing for API security
-* Nodemon – Development tool for automatic server restarts
-* Postman – API testing and debugging
+* PostgreSQL – Database for storing user and transaction data
+* Sequelize – ORM for database interactions
 * JSON Web Token (JWT) – Authentication and user session management
 * Stripe / PayPal Sandbox – Mock payment gateway integration
 * WebSockets – Real-time notifications for transactions
@@ -75,7 +60,7 @@ and view detailed transaction history. Real-time WebSocket notifications ensure 
 while CurrencyLayer API integration allows seamless currency conversion. Security measures, including JWT authentication, rate limiting, and data validation, 
 were implemented to ensure a fraud-resistant system.
 
-The backend was built using Node.js, Express.js, and MongoDB/PostgreSQL, with Mongoose/Sequelize as the ORM for efficient database management. 
+The backend was built using Node.js, Express.js, and PostgreSQL, with Sequelize as the ORM for efficient database management. 
 Postman documentation provides clear API usage guidelines, while Joi validation ensures data integrity. This project showcases secure payment handling, 
 scalable API architecture, and real-time financial transaction management. 🚀
 
@@ -93,7 +78,7 @@ scalable API architecture, and real-time financial transaction management. 🚀
 ## Running the App from your terminal
 1. From the parent directory change to the backend folder of the project by running the following command `cd backend`
 2. run `npm install` to install all packages in package.json file
-3. From the root folder run the following command to start the backend server: `npm run start` 
+3. From the root folder run the following command to start the backend server: `npm run dev` 
 4. The backend server will be running at http://localhost:3000.
 
 ## Endpoints
