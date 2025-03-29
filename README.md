@@ -1,6 +1,6 @@
 # FINTECH WALLET
 # Digital wallet application
-This 💰 Fintech Wallet Application is a secure digital wallet that allows users to 🔐 register, 🔑 log in, 💳 add funds via mock payment gateways (Stripe/PayPal), 
+This 💰 Fintech Wallet Application is a secure digital wallet that allows users to 🔐 register, 🔑 log in, 💳 add funds via mock payment gateways (Stripe), 
 💸 transfer money, and 📜 view transaction history. Built with 🖥️ Node.js, 🚀 Express.js, and 🗄️ MongoDB, it ensures scalability and efficiency. 
 Additional features include 🔔 real-time notifications with WebSockets and 💱 currency conversion via API for seamless financial transactions.
 
@@ -8,7 +8,7 @@ Additional features include 🔔 real-time notifications with WebSockets and �
 
 ## About 
 * 👋 Hi, I’m Chidike Henry
-* 😎 I’m a fullstack developer
+* 😎 I’m a fullstack develope, backend is my forte
 * 💻 This is FINTECH WALLET API, which I built to allow users register, login and add funds to manage transactions. 
 * 💞️ I’m looking to collaborate on JS projects
 * 📫 How to reach me chidike.henry@gmail.com
@@ -39,7 +39,7 @@ So, you are to create a digital wallet service with the following features:
 * PostgreSQL – Database for storing user and transaction data
 * Sequelize – ORM for database interactions
 * JSON Web Token (JWT) – Authentication and user session management
-* Stripe / PayPal Sandbox – Mock payment gateway integration
+* Stripe – Mock payment gateway integration
 * WebSockets – Real-time notifications for transactions
 * CurrencyLayer API – Currency conversion integration
 * Express Rate Limit – Prevents excessive API requests
@@ -55,7 +55,7 @@ So, you are to create a digital wallet service with the following features:
 ## Project Description: “FintechWallet”
 
 Fintech Wallet API is a secure digital wallet service that enables users to register, log in, add funds, transfer money, and track transaction history through a well-structured API.
-The task involved building a robust financial transaction system where users can add funds via mock payment gateways (Stripe/PayPal sandbox), transfer funds between accounts,
+The task involved building a robust financial transaction system where users can add funds via mock payment gateways (Stripe), transfer funds between accounts,
 and view detailed transaction history. Real-time WebSocket notifications ensure users are instantly updated on their transactions, 
 while CurrencyLayer API integration allows seamless currency conversion. Security measures, including JWT authentication, rate limiting, and data validation, 
 were implemented to ensure a fraud-resistant system.
