@@ -11,7 +11,7 @@ Additional features include 🔔 real-time notifications with WebSockets and �
 ## About
 
 - 👋 Hi, I’m Chidike Henry
-- 😎 I’m a fullstack develope, backend is my forte
+- 😎 I’m a fullstack developer, backend is my forte
 - 💻 This is FINTECH WALLET API, which I built to allow users register, login and add funds to manage transactions.
 - 💞️ I’m looking to collaborate on JS projects
 - 📫 How to reach me chidike.henry@gmail.com
