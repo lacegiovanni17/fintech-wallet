@@ -2,12 +2,14 @@
 
 # Digital wallet application
 
-This 💰 Fintech Wallet Application is a secure digital wallet that allows users to 🔐 register, 🔑 log in, 💳 add funds via mock payment gateways (Stripe),
+This 💰 Fintech Wallet Application is a secure digital wallet that allows users to 🔐 register, 🔑 log in, 💳 add funds via mock payment gateways (Paypal),
 💸 transfer money, and 📜 view transaction history. Built with 🖥️ Node.js, 🚀 Express.js, and 🗄️ MongoDB, it ensures scalability and efficiency.
 Additional features include 🔔 real-time notifications with WebSockets and 💱 currency conversion via API for seamless financial transactions.
 
-### PICTURE
+### API-PICTURE
+![fintechAPI_swagger](https://github.com/user-attachments/assets/49f98865-035a-48a9-9043-cbb4ce0eefff)
 
+#swagger-http://localhost:4000/api/docs/#/Payments/TransferFunds
 ## About
 
 - 👋 Hi, I’m Chidike Henry
@@ -41,9 +43,9 @@ So, you are to create a digital wallet service with the following features:
 - Node.js – Backend runtime environment
 - Express.js – Web framework for building RESTful APIs
 - PostgreSQL – Database for storing user and transaction data
-- Sequelize – ORM for database interactions
+- TypeORM – ORM for database interactions
 - JSON Web Token (JWT) – Authentication and user session management
-- Stripe – Mock payment gateway integration
+- Paypal – Mock payment gateway integration
 - WebSockets – Real-time notifications for transactions
 - CurrencyLayer API – Currency conversion integration
 - Express Rate Limit – Prevents excessive API requests
@@ -57,7 +59,7 @@ So, you are to create a digital wallet service with the following features:
 ## Project Description: “FintechWallet”
 
 Fintech Wallet API is a secure digital wallet service that enables users to register, log in, add funds, transfer money, and track transaction history through a well-structured API.
-The task involved building a robust financial transaction system where users can add funds via mock payment gateways (Stripe), transfer funds between accounts,
+The task involved building a robust financial transaction system where users can add funds via mock payment gateways (Paypal), transfer funds between accounts,
 and view detailed transaction history. Real-time WebSocket notifications ensure users are instantly updated on their transactions,
 while CurrencyLayer API integration allows seamless currency conversion. Security measures, including JWT authentication, rate limiting, and data validation,
 were implemented to ensure a fraud-resistant system.
@@ -67,8 +69,10 @@ Postman documentation provides clear API usage guidelines, while Joi validation 
 scalable API architecture, and real-time financial transaction management. 🚀
 
 ## Getting Started
+![fintechAPI](https://github.com/user-attachments/assets/fcfaa3b8-4b19-404f-86fd-d2d97f7ecc61)
 
 ## Mini-project Fintech Wallet
+![fintechAPI_Data](https://github.com/user-attachments/assets/c1cf3cbf-9b09-45cd-9e13-84bf896a3f5b)
 
 ## Prerequisites
 
@@ -84,8 +88,8 @@ scalable API architecture, and real-time financial transaction management. 🚀
 
 1. From the parent directory change to the backend folder of the project by running the following command `cd backend`
 2. run `npm install` to install all packages in package.json file
-3. From the root folder run the following command to start the backend server: `npm run dev`
-4. The backend server will be running at http://localhost:3000.
+3. From the root folder run the following command to start the backend server: `npm run start`
+4. The backend server will be running at http://localhost:4000.
 
 ## Endpoints
 
@@ -93,20 +97,9 @@ scalable API architecture, and real-time financial transaction management. 🚀
 
 Steps:
 
-1. using npx install all neccessary modelsCreate the dbs
-   npx sequelize-cli model:generate --name User --attributes firstName:string,lastName:string,email:string,password:string,balance:decimal
-   npx sequelize-cli model:generate --name Wallet --attributes userId:integer,balance:decimal
-   npx sequelize-cli model:generate --name Transaction --attributes senderId:integer,receiverId:integer,amount:decimal,type:string,status:string
-   npx sequelize-cli model:generate --name Payment --attributes userId:integer,amount:decimal,status:string,paymentReference:string
-   npx sequelize-cli model:generate --name Notification --attributes userId:integer,message:string,status:string
-2. configure the migration file from js to ts and change the typings where neccessary.
-3. run npx tsc
-4. run npm run migrate
-5. start testing from each flow
-
 ## Documentation
 
-Access documentation here - https://documenter.getpostman.com
+Access documentation here - [https://documenter.getpostman.com](http://localhost:4000/api/docs/#/Payments/TransferFunds)
 
 ## Error Handling
 
